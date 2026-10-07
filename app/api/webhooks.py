@@ -31,8 +31,8 @@ async def bank_webhook(
 
     try:
         raw = json.loads(body) if body else {}
-    except json.JSONDecodeError:
-        raise HTTPException(status_code=422, detail="invalid json")
+    except json.JSONDecodeError as exc:
+        raise HTTPException(status_code=422, detail="invalid json") from exc
 
     payload = WebhookIn.model_validate(raw)
 
