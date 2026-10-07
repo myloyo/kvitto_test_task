@@ -1,0 +1,45 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: kvitto
+      POSTGRES_PASSWORD: kvitto
+      POSTGRES_DB: kvitto
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U kvitto -d kvitto"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql+psycopg://kvitto:kvitto@db:5432/kvitto
+
+      WEBHOOK_SECRET: super-secret-change-me
+      WEBHOOK_VERIFY_SIGNATURE: "false"
+
+      BANK_BASE_URL: https://bank.local
+      BANK_RETRY_ATTEMPTS: "3"
+      BANK_RETRY_BASE_DELAY: "0.2"
+      BANK_TIMEOUT: "5.0"
+      BANK_CONFIRM_ON_WEBHOOK: "false"
+    ports:
+      - "8000:8000"
+    command: >
+      sh -c "alembic upgrade head &&
+             uvicorn app.main:app --host 0.0.0.0 --port 8000"
+
+volumes:
+  pgdata:

@@ -1,0 +1,10 @@
+Kvitto payments API (junior FastAPI assignment).
+
+Слои: domain (правила) → application (сценарии) → infrastructure (база/банк) → api (HTTP).
+Исключения только в app/domain/exceptions.py. HTTP-коды — в api/exception_handlers.py.
+
+- Суммы — целые копейки, без float.
+- Промокод KVITTO10 (буква O, не ноль), регистр не важен, неизвестный → 422.
+- Переходы: pending→succeeded|failed, succeeded→refunded. Иначе 409 {"error":"invalid_transition"}.
+- Idempotency-Key: тот же платёж и HTTP 200, без второй строки.
+- Комментарии — по-русски и только «зачем», не «что делает строка».
