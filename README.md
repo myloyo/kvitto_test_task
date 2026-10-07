@@ -1,3 +1,4 @@
+![CI](https://github.com/myloyo/kvitto_test_task/actions/workflows/ci.yml/badge.svg)
 # Kvitto Payments
 
 API оплаты курсов: тарифы, создание платежа, статусы от банка.
